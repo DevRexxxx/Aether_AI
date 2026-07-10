@@ -191,7 +191,7 @@ A 10-card spatial dashboard displayed when no chat session is active:
 | Card | Color Accent | Content |
 |---|---|---|
 | Conversation Stats | Cyan | 98.2% Accuracy |
-| AI Models | Violet | Aether-v4 Active |
+| AI Models | Violet | Aether-v4.0 Active |
 | Memory | Amber | 4.2 TB Indexed |
 | Recent Chats | Rose | 12 active sessions |
 | Files | Emerald | 24 docs syncing |
@@ -422,6 +422,7 @@ Sessions cascade-delete their messages when removed.
 
 | Version | Highlights |
 |---|---|
+| **v4.0** | **Functional Header Features**<br/>• **Command Palette:** `Ctrl+K` global search for jumping between sessions and quick actions.<br/>• **Notifications:** Event-driven notification panel for system events (session creation, AI response, voice transcription completion) with unread badge.<br/>• **Settings Modal:** Complete configuration for AI models (Llama 3, Mistral, Code Llama, Gemma, Phi-3), temperature, max tokens, and editable system prompts connected directly to the Python backend.<br/>• **Profile Integration:** Editable user profile with avatar initialization, session statistics, and sign out functionality. |
 | **v3.0** | **The Aether Upgrade**<br/>• **Rebrand & Persona:** Shifted from a constrained sales FAQ bot to a general-purpose AI assistant named Aether AI.<br/>• **UI/UX Fixes:** Eliminated nested scroll contexts to fix a critical bug causing the entire page to slide up during chat auto-scrolling.<br/>• **Color Overhaul:** Replaced monochrome orange with a rich multi-tone palette (Electric Violet, Cyan, Rose, Amber, Orange) featuring per-card Bento Grid colors and a warm-cool duality in the Sidebar.<br/>• **Smart Suggestions:** Replaced support-centric prompts with context-aware general AI prompts (coding, writing, math). |
 | **v2.0** | Added Whisper integration for real-time voice input and RAG semantic search capabilities using Sentence Transformers. |
 | **v1.0** | Initial full-stack chatbot release with Next.js 16 + FastAPI + Ollama Llama 3. Multi-session persistence via Prisma/SQLite. |

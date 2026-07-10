@@ -181,7 +181,7 @@ export function ChatInput({ onSend, isLoading, suggestions = [] }: ChatInputProp
           className="text-center mt-5 flex items-center justify-center gap-1.5"
         >
           <Sparkles size={12} className="text-[#FF5D00]" />
-          <span className="text-[10px] text-white/30 font-bold tracking-[0.2em] uppercase">Aether-v4 Spatial Engine Active</span>
+          <span className="text-[10px] text-white/30 font-bold tracking-[0.2em] uppercase">Aether-v4.0 Spatial Engine Active</span>
         </motion.div>
       </div>
     </div>
