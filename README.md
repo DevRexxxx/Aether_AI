@@ -249,6 +249,20 @@ User Query
 | `num_predict` | `512` | Max response tokens |
 | `repeat_penalty` | `1.1` | Mild repetition suppression |
 
+### Supported AI Models
+
+Aether supports dynamic model switching via the Settings modal. To use these models, you must first install them locally using Ollama:
+
+| Model Name | Description | Installation Command |
+|---|---|---|
+| **Llama 3** | Meta's flagship model (default). Excellent general knowledge. | `ollama pull llama3` |
+| **Mistral** | Fast, efficient, and highly capable for its size. | `ollama pull mistral` |
+| **Code Llama** | Fine-tuned specifically for generating and discussing code. | `ollama pull codellama` |
+| **Gemma** | Google's state-of-the-art open models built from Gemini. | `ollama pull gemma` |
+| **Phi-3** | Microsoft's small language model, extremely fast for quick queries. | `ollama pull phi3` |
+
+*Note: If you select a model in the UI that hasn't been pulled yet, the backend will return a "model not found" error.*
+
 ### System Persona
 
 The AI is configured as a general-purpose assistant (similar to ChatGPT/Gemini/Claude) with:

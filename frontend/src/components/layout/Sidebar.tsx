@@ -72,7 +72,10 @@ export function Sidebar() {
                   <div className="w-8 h-8 rounded-[10px] bg-gradient-to-tr from-violet-600 via-orange-500 to-amber-400 flex items-center justify-center shadow-[0_0_18px_rgba(255,107,44,0.35)]">
                     <Sparkles size={16} className="text-white" />
                   </div>
-                  Aether
+                  <div className="flex items-center gap-2">
+                    Aether
+                    <span className="text-[10px] text-violet-400 bg-violet-500/15 px-1.5 py-0.5 rounded-md font-bold tracking-wider">V4.0</span>
+                  </div>
                 </motion.div>
               ) : (
                 <motion.div
