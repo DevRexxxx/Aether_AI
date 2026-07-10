@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.0.0-8B5CF6?style=flat-square" />
+  <img src="https://img.shields.io/badge/version-3.0.0-8B5CF6?style=flat-square" />
   <img src="https://img.shields.io/badge/next.js-16-000000?style=flat-square&logo=nextdotjs" />
   <img src="https://img.shields.io/badge/react-19-61dafb?style=flat-square&logo=react" />
   <img src="https://img.shields.io/badge/typescript-5-3178c6?style=flat-square&logo=typescript" />
@@ -422,7 +422,9 @@ Sessions cascade-delete their messages when removed.
 
 | Version | Highlights |
 |---|---|
-| **v1.0** | Full-stack chatbot with Next.js 16 + FastAPI + Ollama Llama 3. RAG pipeline with Sentence Transformers. Voice input via Faster Whisper. Spatial glassmorphism UI with Framer Motion. Multi-session persistence via Prisma/SQLite. Bento grid dashboard with per-card color theming. Smart context-aware suggestions. Animated gradient input border. Multi-tone color palette (violet, cyan, rose, amber, orange). |
+| **v3.0** | **The Aether Upgrade**<br/>• **Rebrand & Persona:** Shifted from a constrained sales FAQ bot to a general-purpose AI assistant named Aether AI.<br/>• **UI/UX Fixes:** Eliminated nested scroll contexts to fix a critical bug causing the entire page to slide up during chat auto-scrolling.<br/>• **Color Overhaul:** Replaced monochrome orange with a rich multi-tone palette (Electric Violet, Cyan, Rose, Amber, Orange) featuring per-card Bento Grid colors and a warm-cool duality in the Sidebar.<br/>• **Smart Suggestions:** Replaced support-centric prompts with context-aware general AI prompts (coding, writing, math). |
+| **v2.0** | Added Whisper integration for real-time voice input and RAG semantic search capabilities using Sentence Transformers. |
+| **v1.0** | Initial full-stack chatbot release with Next.js 16 + FastAPI + Ollama Llama 3. Multi-session persistence via Prisma/SQLite. |
 
 ---
 
