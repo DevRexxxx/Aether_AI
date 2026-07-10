@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { BentoGrid } from "./../dashboard/BentoGrid";
 import { ChatArea } from "./ChatArea";
 import { ChatInput } from "./ChatInput";
+import { getSettings, type AetherSettings } from "@/components/ui/SettingsModal";
 
 export type Message = {
   id: string;
@@ -15,6 +16,29 @@ export function ChatWorkspace() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [settings, setSettings] = useState<AetherSettings | null>(null);
+
+  // Load settings on mount and listen for changes
+  useEffect(() => {
+    setSettings(getSettings());
+
+    const handleSettingsChanged = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      setSettings(detail);
+    };
+    window.addEventListener("SETTINGS_CHANGED", handleSettingsChanged);
+    return () => window.removeEventListener("SETTINGS_CHANGED", handleSettingsChanged);
+  }, []);
+
+  // Listen for CLEAR_CONVERSATION from Command Palette
+  useEffect(() => {
+    const handleClear = () => {
+      setMessages([]);
+      setSessionId(null);
+    };
+    window.addEventListener("CLEAR_CONVERSATION", handleClear);
+    return () => window.removeEventListener("CLEAR_CONVERSATION", handleClear);
+  }, []);
 
   useEffect(() => {
     const handleSelected = async (e: Event) => {
@@ -33,7 +57,7 @@ export function ChatWorkspace() {
     return () => window.removeEventListener("SESSION_SELECTED", handleSelected);
   }, []);
 
-  const handleSend = async (content: string) => {
+  const handleSend = useCallback(async (content: string) => {
     let currentSessionId = sessionId;
     
     if (!currentSessionId) {
@@ -63,10 +87,25 @@ export function ChatWorkspace() {
     setIsLoading(true);
 
     try {
+      // Build request body with settings
+      const currentSettings = settings || getSettings();
+      const requestBody: Record<string, unknown> = {
+        query: content,
+        sessionId: currentSessionId,
+      };
+
+      // Include settings if customized
+      if (currentSettings) {
+        requestBody.model = currentSettings.model;
+        requestBody.temperature = currentSettings.temperature;
+        requestBody.maxTokens = currentSettings.maxTokens;
+        requestBody.systemPrompt = currentSettings.systemPrompt;
+      }
+
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: content, sessionId: currentSessionId }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!res.ok) throw new Error("Failed to get response");
@@ -76,6 +115,9 @@ export function ChatWorkspace() {
         ...prev,
         { id: data.messageId || Math.random().toString(), role: "assistant", content: data.response }
       ]);
+
+      // Dispatch AI_RESPONSE event for notifications
+      window.dispatchEvent(new CustomEvent("AI_RESPONSE"));
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -84,7 +126,7 @@ export function ChatWorkspace() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [sessionId, settings]);
 
   const dynamicSuggestions = useMemo(() => {
     if (messages.length === 0) return [];

@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   try {
-    const { query, sessionId } = await req.json();
+    const { query, sessionId, model, temperature, maxTokens, systemPrompt } = await req.json();
 
     if (!query || typeof query !== "string") {
       return NextResponse.json({ error: "Invalid query" }, { status: 400 });
@@ -23,14 +23,22 @@ export async function POST(req: Request) {
       },
     });
 
-    // Call the Python FastAPI server
+    // Call the Python FastAPI server with optional settings overrides
     const pythonServerUrl = "http://localhost:8000/chat";
+    const requestBody: Record<string, unknown> = { query, top_k: 2 };
+
+    // Forward settings if provided
+    if (model) requestBody.model = model;
+    if (temperature !== undefined) requestBody.temperature = temperature;
+    if (maxTokens !== undefined) requestBody.max_tokens = maxTokens;
+    if (systemPrompt) requestBody.system_prompt = systemPrompt;
+
     const pythonResponse = await fetch(pythonServerUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ query: query, top_k: 2 }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!pythonResponse.ok) {

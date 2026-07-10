@@ -52,9 +52,30 @@ def load_models():
 class ChatRequest(BaseModel):
     query: str
     top_k: int = 1
+    model: str | None = None
+    temperature: float | None = None
+    max_tokens: int | None = None
+    system_prompt: str | None = None
 
 class ChatResponse(BaseModel):
     response: str
+
+# Default system prompt used when none is provided by the frontend
+DEFAULT_SYSTEM_PROMPT = """You are an advanced AI assistant — intelligent, helpful, and versatile, similar to ChatGPT, Gemini, and Claude.
+
+CAPABILITIES:
+- You can answer questions on any topic: science, math, history, technology, philosophy, creative writing, coding, and more.
+- You can help with analysis, brainstorming, explanations, problem-solving, writing, and general conversation.
+- You can write code, explain concepts, summarize information, translate, and assist with creative tasks.
+
+PERSONALITY:
+- Be conversational, clear, and helpful.
+- Match the depth of your response to the complexity of the question — simple questions get concise answers, complex ones get thorough explanations.
+- Be direct. Don't start with "Great question!" or "Based on...". Just answer naturally.
+- If you're unsure about something, say so honestly rather than making things up.
+- Use formatting (lists, code blocks, headers) when it improves readability, but keep casual questions casual.
+
+You may be given supplementary reference context below — use it if relevant, but primarily rely on your own broad knowledge."""
 
 @app.post("/chat", response_model=ChatResponse)
 def chat_endpoint(req: ChatRequest):
@@ -84,22 +105,8 @@ def chat_endpoint(req: ChatRequest):
                 context_parts.append(f"Q: {q}\nA: {a}")
             context_str = "\n\n".join(context_parts)
         
-        # General-purpose AI assistant system prompt
-        system_prompt = """You are an advanced AI assistant — intelligent, helpful, and versatile, similar to ChatGPT, Gemini, and Claude.
-
-CAPABILITIES:
-- You can answer questions on any topic: science, math, history, technology, philosophy, creative writing, coding, and more.
-- You can help with analysis, brainstorming, explanations, problem-solving, writing, and general conversation.
-- You can write code, explain concepts, summarize information, translate, and assist with creative tasks.
-
-PERSONALITY:
-- Be conversational, clear, and helpful.
-- Match the depth of your response to the complexity of the question — simple questions get concise answers, complex ones get thorough explanations.
-- Be direct. Don't start with "Great question!" or "Based on...". Just answer naturally.
-- If you're unsure about something, say so honestly rather than making things up.
-- Use formatting (lists, code blocks, headers) when it improves readability, but keep casual questions casual.
-
-You may be given supplementary reference context below — use it if relevant, but primarily rely on your own broad knowledge."""
+        # Use provided system prompt or fall back to default
+        system_prompt = req.system_prompt if req.system_prompt else DEFAULT_SYSTEM_PROMPT
 
         # Build the prompt — include RAG context only if available
         if context_str:
@@ -110,18 +117,23 @@ User: {user_query}"""
         else:
             prompt = f"User: {user_query}"
 
+        # Use provided settings or fall back to defaults
+        selected_model = req.model or "llama3"
+        selected_temperature = req.temperature if req.temperature is not None else 0.7
+        selected_max_tokens = req.max_tokens if req.max_tokens is not None else 512
+
         # Generate response using local Ollama
         url = "http://localhost:11434/api/generate"
         data = {
-            "model": "llama3",
+            "model": selected_model,
             "system": system_prompt,
             "prompt": prompt,
             "stream": False,
             "options": {
-                "temperature": 0.7,
+                "temperature": selected_temperature,
                 "top_p": 0.9,
                 "top_k": 40,
-                "num_predict": 512,
+                "num_predict": selected_max_tokens,
                 "repeat_penalty": 1.1
             }
         }
