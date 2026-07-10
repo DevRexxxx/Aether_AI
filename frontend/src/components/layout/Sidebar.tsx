@@ -99,22 +99,8 @@ export function Sidebar() {
 
           <nav className="flex flex-col gap-2">
             <button
-              onClick={async () => {
-                try {
-                  const res = await fetch("/api/sessions", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ title: "New Chat" }),
-                  });
-                  if (res.ok) {
-                    const newSession = await res.json();
-                    window.dispatchEvent(new CustomEvent("SESSION_CREATED", { detail: newSession.id }));
-                    fetchSessions(); 
-                  }
-                } catch {
-                   // Fallback action
-                   window.dispatchEvent(new CustomEvent("SESSION_CREATED", { detail: "mock" }));
-                }
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent("CLEAR_CONVERSATION"));
               }}
               className="flex items-center gap-3 px-4 py-3.5 rounded-[20px] transition-all duration-300 group bg-gradient-to-r from-violet-500/15 via-orange-500/8 to-transparent border border-violet-500/20 hover:border-orange-400/40 shadow-[0_4px_20px_rgba(255,107,44,0.06)] hover:shadow-[0_4px_24px_rgba(255,107,44,0.12)] relative overflow-hidden"
             >
