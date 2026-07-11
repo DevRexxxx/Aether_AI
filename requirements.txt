@@ -1,0 +1,27 @@
+# ── Core Backend ──
+fastapi>=0.104.0
+uvicorn>=0.24.0
+pydantic>=2.0.0
+joblib>=1.3.0
+
+# ── ML / Embeddings ──
+sentence-transformers>=3.0.0
+numpy>=1.24.0
+pandas>=2.0.0
+
+# ── ONNX Runtime (optimized CPU inference — replaces PyTorch for embeddings) ──
+onnxruntime>=1.16.0
+
+# ── Optional: Voice Transcription (lazy-loaded, not needed for text-only) ──
+# faster-whisper>=1.0.0
+
+# ── Optional: Memory profiling ──
+# psutil>=5.9.0
+
+# ── Audio Responses (V5.0) ──
+edge-tts>=0.0.0
+playsound>=1.2.2
+
+# ── Document Parsing (V5.1) ──
+PyPDF2>=3.0.0
+python-docx>=1.1.0

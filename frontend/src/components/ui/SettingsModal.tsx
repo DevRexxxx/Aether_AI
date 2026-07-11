@@ -13,7 +13,7 @@ export interface AetherSettings {
 
 const DEFAULT_SETTINGS: AetherSettings = {
   model: "llama3",
-  temperature: 0.7,
+  temperature: 0.2,
   maxTokens: 512,
   systemPrompt: `You are an advanced AI assistant — intelligent, helpful, and versatile, similar to ChatGPT, Gemini, and Claude.
 
@@ -26,8 +26,10 @@ PERSONALITY:
 - Be conversational, clear, and helpful.
 - Match the depth of your response to the complexity of the question.
 - Be direct. Don't start with "Great question!" or "Based on...". Just answer naturally.
-- If you're unsure about something, say so honestly rather than making things up.
-- Use formatting (lists, code blocks, headers) when it improves readability, but keep casual questions casual.`,
+- If you're unsure about something, say so honestly rather than making things up. Do NOT hallucinate.
+- Use formatting (lists, code blocks, headers) when it improves readability, but keep casual questions casual.
+
+You may be given supplementary reference context below. If context is provided, you MUST base your answer primarily on the context. If the answer cannot be found in the context, clearly state that you do not know. Do not hallucinate or invent information.`,
 };
 
 const AVAILABLE_MODELS = [

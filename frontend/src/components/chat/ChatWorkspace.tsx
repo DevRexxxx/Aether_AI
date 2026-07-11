@@ -57,7 +57,7 @@ export function ChatWorkspace() {
     return () => window.removeEventListener("SESSION_SELECTED", handleSelected);
   }, []);
 
-  const handleSend = useCallback(async (content: string) => {
+  const handleSend = useCallback(async (content: string, context?: string) => {
     let currentSessionId = sessionId;
     
     if (!currentSessionId) {
@@ -99,7 +99,13 @@ export function ChatWorkspace() {
         requestBody.model = currentSettings.model;
         requestBody.temperature = currentSettings.temperature;
         requestBody.maxTokens = currentSettings.maxTokens;
-        requestBody.systemPrompt = currentSettings.systemPrompt;
+        
+        // Inject attached document text into the system prompt if present
+        requestBody.systemPrompt = context 
+            ? `${currentSettings.systemPrompt}\n\n[USER PROVIDED DOCUMENT CONTEXT]\nThe user has attached a document with the following content. Please answer their question using this context if applicable:\n${context}`
+            : currentSettings.systemPrompt;
+      } else if (context) {
+        requestBody.systemPrompt = `You are a helpful AI assistant.\n\n[USER PROVIDED DOCUMENT CONTEXT]\nThe user has attached a document with the following content. Please answer their question using this context if applicable:\n${context}`;
       }
 
       const res = await fetch("/api/chat", {

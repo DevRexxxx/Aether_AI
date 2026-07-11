@@ -1,0 +1,22 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Databases
+frontend/prisma/dev.db
+frontend/prisma/dev.db-journal
+
+# Local environment variables
+.env
+.env.local
+
+# IDEs
+.vscode/
+.idea/

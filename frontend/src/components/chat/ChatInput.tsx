@@ -1,20 +1,24 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Paperclip, Mic, ArrowRight, Sparkles } from "lucide-react";
+import { Paperclip, Mic, ArrowRight, Sparkles, X, FileText, Loader2 } from "lucide-react";
 import { useState, useRef } from "react";
 
 interface ChatInputProps {
-  onSend: (message: string) => void;
+  onSend: (message: string, context?: string) => void;
   isLoading: boolean;
   suggestions?: string[];
 }
 
 export function ChatInput({ onSend, isLoading, suggestions = [] }: ChatInputProps) {
   const [inputValue, setInputValue] = useState("");
+  const [attachedText, setAttachedText] = useState<string | null>(null);
+  const [attachedFileName, setAttachedFileName] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
 
@@ -81,9 +85,40 @@ export function ChatInput({ onSend, isLoading, suggestions = [] }: ChatInputProp
   };
 
   const handleSend = () => {
-    if (inputValue.trim() && !isLoading) {
-      onSend(inputValue.trim());
+    if (inputValue.trim() && !isLoading && !isUploading) {
+      onSend(inputValue.trim(), attachedText || undefined);
       setInputValue("");
+      setAttachedText(null);
+      setAttachedFileName(null);
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      if (!response.ok) throw new Error("File upload failed");
+      
+      const data = await response.json();
+      if (data.text) {
+        setAttachedText(data.text);
+        setAttachedFileName(file.name);
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      alert("Failed to parse document. Ensure it is a supported file type (PDF, DOCX, TXT, CSV).");
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -126,6 +161,27 @@ export function ChatInput({ onSend, isLoading, suggestions = [] }: ChatInputProp
           )}
         </AnimatePresence>
 
+        {/* Attached File Indicator */}
+        <AnimatePresence>
+          {attachedFileName && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              className="mb-4 flex items-center gap-2 bg-[#FF5D00]/10 border border-[#FF5D00]/30 px-4 py-2 rounded-full text-white/90 text-sm shadow-lg backdrop-blur-md"
+            >
+              <FileText size={16} className="text-[#FF5D00]" />
+              <span className="font-medium truncate max-w-[200px]">{attachedFileName}</span>
+              <button 
+                onClick={() => { setAttachedText(null); setAttachedFileName(null); }}
+                className="ml-2 p-1 hover:bg-[#FF5D00]/20 rounded-full transition-colors text-white/50 hover:text-white"
+              >
+                <X size={14} />
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* The Animated Gradient Border Wrapper */}
         <motion.div
           initial={{ y: 20, opacity: 0 }}
@@ -138,8 +194,19 @@ export function ChatInput({ onSend, isLoading, suggestions = [] }: ChatInputProp
           
           {/* Inner Content (The actual input box) */}
           <div className="relative z-10 flex items-center gap-3 bg-black/70 backdrop-blur-[24px] rounded-[32px] p-2 pl-3 w-full border border-white/5">
-            <button className="p-3.5 rounded-full hover:bg-white/10 transition-colors text-white/50 hover:text-white">
-              <Paperclip size={22} strokeWidth={1.5} />
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              className="hidden" 
+              onChange={handleFileChange} 
+              accept=".txt,.pdf,.csv,.md,.json,.doc,.docx" 
+            />
+            <button 
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isLoading || isUploading}
+              className={`p-3.5 rounded-full transition-colors ${isUploading ? "animate-pulse text-[#FF5D00]" : "hover:bg-white/10 text-white/50 hover:text-white"}`}
+            >
+              {isUploading ? <Loader2 size={22} className="animate-spin" /> : <Paperclip size={22} strokeWidth={1.5} />}
             </button>
             
             <input
@@ -165,7 +232,7 @@ export function ChatInput({ onSend, isLoading, suggestions = [] }: ChatInputProp
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleSend}
-              disabled={isLoading || !inputValue.trim() || isRecording || isTranscribing}
+              disabled={isLoading || !inputValue.trim() || isRecording || isTranscribing || isUploading}
               className="p-4 rounded-full bg-[#FF5D00] hover:bg-[#FF5D00]/90 transition-all text-white shadow-[0_0_20px_rgba(255,93,0,0.4)] disabled:opacity-50 disabled:shadow-none ml-1 flex items-center justify-center group-focus-within:shadow-[0_0_30px_rgba(255,93,0,0.6)]"
             >
               <ArrowRight size={22} strokeWidth={2} />
