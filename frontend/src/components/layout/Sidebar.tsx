@@ -74,7 +74,7 @@ export function Sidebar() {
                   </div>
                   <div className="flex items-center gap-2">
                     Aether
-                    <span className="text-[10px] text-violet-400 bg-violet-500/15 px-1.5 py-0.5 rounded-md font-bold tracking-wider">V4.0</span>
+                    <span className="text-[10px] text-violet-400 bg-violet-500/15 px-1.5 py-0.5 rounded-md font-bold tracking-wider">V5.0</span>
                   </div>
                 </motion.div>
               ) : (

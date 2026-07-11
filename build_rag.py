@@ -27,7 +27,7 @@ print(f"Embeddings shape: {faq_embeddings.shape}, dtype: {faq_embeddings.dtype}"
 model_data = {
     'df': df,
     'embeddings': faq_embeddings,  # NumPy float16 array
-    'format_version': 2,           # Versioning for backward compat
+    'format_version': 5,           # Versioning for backward compat (V5.0)
 }
 joblib.dump(model_data, 'chatbot_rag_data.joblib')
 
